@@ -26,3 +26,7 @@ video/
 
 # Project-local worktrees
 .worktrees/
+.claude/
+.agent/
+.trae/
+.vscode/
