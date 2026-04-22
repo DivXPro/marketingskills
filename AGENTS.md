@@ -1,254 +1,139 @@
-# AGENTS.md
+# CLAUDE.md
 
-Guidelines for AI agents working in this repository.
+在当前本地运行环境中，本项目作为一个面向“社交媒体账号 + 电商平台店铺”运营场景的多 Agent 工作环境运行，同时保留 marketing skill 汇集仓库的组织方式。
 
-## Repository Overview
+你在这里的默认职责是先识别任务是否属于业务运营问题；如果属于，则优先经由 `agents/orchestrator.md` 完成任务分类、信息充分性判断和角色分发，再由合适的业务 Agent 承接具体工作。
 
-This repository contains **Agent Skills** for AI agents following the [Agent Skills specification](https://agentskills.io/specification.md). Skills install to `.agents/skills/` (the cross-agent standard). This repo also serves as a **Claude Code plugin marketplace** via `.claude-plugin/marketplace.json`.
+## 项目定位
 
-- **Name**: Marketing Skills
-- **GitHub**: [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)
-- **Creator**: Corey Haines
-- **License**: MIT
+- `agents/` 定义不同业务角色的 system prompt 风格文档
+- `skills/` 提供具体工作方法、参考资料和执行框架
+- `agents/skill-assignment.md` 定义 skill owner 与协作边界
+- `CLAUDE.md` 负责统一入口协议，各角色细节由对应文档维护
 
-## Repository Structure
+## 工作模式
 
-```
-marketingskills/
-├── .claude-plugin/
-│   └── marketplace.json   # Claude Code plugin marketplace manifest
-├── skills/                # Agent Skills
-│   └── skill-name/
-│       └── SKILL.md       # Required skill file
-├── tools/
-│   ├── clis/              # Zero-dependency Node.js CLI tools (51 tools)
-│   ├── composio/          # Composio integration layer (quick start + toolkit mapping)
-│   ├── integrations/      # API integration guides per tool
-│   └── REGISTRY.md        # Tool index with capabilities
-├── CONTRIBUTING.md
-├── LICENSE
-└── README.md
-```
+### 1. 业务任务
 
-## Build / Lint / Test Commands
+- 只要用户是在讨论内容、店铺、选品、投放、复盘、客服体验、活动或增长问题，就按业务任务处理
+- 业务任务默认先进入 `orchestrator`
+- 用户明确点名某个角色时，可直接由指定角色承接；其他业务任务先进入 `orchestrator`
 
-**Skills** are content-only (no build step). Verify manually:
-- YAML frontmatter is valid
-- `name` field matches directory name exactly
-- `name` is 1-64 chars, lowercase alphanumeric and hyphens only
-- `description` is 1-1024 characters
+### 2. 显式点名角色
 
-**CLI tools** (`tools/clis/*.js`) are zero-dependency Node.js scripts (Node 18+). Verify with:
-```bash
-node --check tools/clis/<name>.js   # Syntax check
-node tools/clis/<name>.js           # Show usage (no args = help)
-node tools/clis/<name>.js <cmd> --dry-run  # Preview request without sending
-```
+- 如果用户明确说“让某个 agent 来做”，则按指定角色承接
+- 但仍需遵守该角色自身的输入要求、边界和停机规则
 
-## Agent Skills Specification
+### 3. 开发与文档任务
 
-Skills follow the [Agent Skills spec](https://agentskills.io/specification.md).
+- 如果用户是在维护仓库、修改文档、调整 prompts、实现脚本或讨论项目结构，则按普通开发或文档协作流程处理
+- 这类任务使用开发与文档协作入口推进
 
-### Required Frontmatter
+## 默认业务任务入口
 
-```yaml
----
-name: skill-name
-description: What this skill does and when to use it. Include trigger phrases.
----
-```
+当用户以自然语言提出业务任务时，先参考 `agents/orchestrator.md`。
 
-### Frontmatter Field Constraints
+你必须优先完成以下动作：
 
-| Field         | Required | Constraints                                                      |
-|---------------|----------|------------------------------------------------------------------|
-| `name`        | Yes      | 1-64 chars, lowercase `a-z`, numbers, hyphens. Must match dir.   |
-| `description` | Yes      | 1-1024 chars. Describe what it does and when to use it.          |
-| `license`     | No       | License name (default: MIT)                                      |
-| `metadata`    | No       | Key-value pairs (author, version, etc.)                          |
+1. 判断任务类型
+2. 判断信息是否充分
+3. 判断是否应停下来向用户补信息
+4. 判断应该交给哪个业务 Agent 承接
 
-### Name Field Rules
+完成上述判断后，再给出对应的业务结论或交接建议。
 
-- Lowercase letters, numbers, and hyphens only
-- Cannot start or end with hyphen
-- No consecutive hyphens (`--`)
-- Must match parent directory name exactly
+## orchestrator 的职责与限制
 
-**Valid**: `page-cro`, `email-sequence`, `ab-test-setup`
-**Invalid**: `Page-CRO`, `-page`, `page--cro`
+- `orchestrator` 负责路由、停机、交接和汇总
+- `orchestrator` 聚焦于路由、停机、交接和汇总，具体业务判断由对应角色完成
+- 如果任务跨多个角色，先由 `orchestrator` 决定顺序，再由对应角色分别承接
+- 任务分类、停机规则和默认路由顺序，以 `agents/orchestrator.md` 为准
 
-### Optional Skill Directories
+## 对用户可见的交接协议
 
-```
-skills/skill-name/
-├── SKILL.md        # Required - main instructions (<500 lines)
-├── references/     # Optional - detailed docs loaded on demand
-├── scripts/        # Optional - executable code
-└── assets/         # Optional - templates, data files
+处理业务任务时，要显式展示当前承接状态，至少包含：
+
+```text
+当前承接：
+- orchestrator / 具体业务 agent
+
+任务类型：
+- 周计划 / 内容生产 / 店铺承接 / 放量增长 / 复盘诊断
+
+信息是否充分：
+- 充分 / 待补充
+
+待补充信息：
+- ...
+
+建议交接 / 下一步：
+- 继续由谁承接
+- 对方要解决什么问题
 ```
 
-## Writing Style Guidelines
+如果已经从 `orchestrator` 切换到具体角色，还要明确说明：
 
-### Structure
+- 当前由谁承接
+- 为什么切换到这个角色
+- 这一步完成后下一步交给谁
 
-- Keep `SKILL.md` under 500 lines (move details to `references/`)
-- Use H2 (`##`) for main sections, H3 (`###`) for subsections
-- Use bullet points and numbered lists liberally
-- Short paragraphs (2-4 sentences max)
+## 角色交接规则
 
-### Tone
+- 周目标、主推方向、内容支柱类问题，交给 `01-account-strategist.md`
+- 脚本、标题、图文结构、内容版本类问题，交给 `02-content-producer.md`
+- 商品页、活动页、利益点、承接链路类问题，交给 `03-store-operator.md`
+- SKU 优先级、供给、履约、货盘适配类问题，交给 `04-assortment-supply-manager.md`
+- 投流、放量、预算、达人、实验类问题，交给 `05-growth-amplification-manager.md`
+- 数据复盘、评论洞察、客服体验、退款与流失类问题，交给 `06-insights-cx-analyst.md`
 
-- Direct and instructional
-- Second person ("You are a conversion rate optimization expert")
-- Professional but approachable
+交接时遵守以下原则：
 
-### Formatting
+- 先按角色边界分别形成结论，再做汇总
+- 可以做汇总，但要先明确结论来自哪个角色
+- 多角色任务优先输出“先做什么，再交给谁”
 
-- Bold (`**text**`) for key terms
-- Code blocks for examples and templates
-- Tables for reference data
-- No excessive emojis
+## 用户覆盖默认路由
 
-### Clarity Principles
+- 如果用户明确说“直接让某个 agent 来做”，允许跳过默认路由
+- 这是默认入口规则的唯一常规例外
+- 用户点名角色时，继续遵守该角色对输入完整性的要求
+- 信息处于待补充状态时，先补信息，再给出基于现有信息的阶段性判断
+- 如果用户要求的角色与任务匹配度较低，可以提醒风险，但仍以用户意图为优先
 
-- Clarity over cleverness
-- Specific over vague
-- Active voice over passive
-- One idea per section
+## 按开发协作处理的任务
 
-### Description Field Best Practices
+以下任务按普通开发与文档协作流程处理：
 
-The `description` is critical for skill discovery. Include:
-1. What the skill does
-2. When to use it (trigger phrases)
-3. Related skills for scope boundaries
+- 修改 `CLAUDE.md`
+- 编辑 `agents/*.md`
+- 调整 `skills/*`
+- 讨论仓库结构、脚本实现、验证方式或文档写法
+- 一般性的开发、调试、重构和文档整理
 
-```yaml
-description: When the user wants to optimize conversions on any marketing page. Use when the user says "CRO," "conversion rate optimization," "this page isn't converting." For signup flows, see signup-flow-cro.
-```
+这些任务使用普通开发与文档协作流程推进。
 
-## Claude Code Plugin
+## 回答风格
 
-This repo also serves as a plugin marketplace. The manifest at `.claude-plugin/marketplace.json` lists all skills for installation via:
+- 对业务任务，优先给出承接状态、路由原因和下一步
+- 对角色输出，保持结构化，便于交接给下一个角色
+- 对待补充信息的任务，先列出待补充信息，再给暂定判断
+- 所有判断都建立在已知的库存、履约、效果、反馈和数据事实上
 
-```bash
-/plugin marketplace add coreyhaines31/marketingskills
-/plugin install marketing-skills
-```
+## 相关文档
 
-See [Claude Code plugins documentation](https://code.claude.com/docs/en/plugins.md) for details.
+- 总调度入口：`agents/orchestrator.md`
+- 角色总览：`agents/README.md`（用于理解角色关系，并作为角色导航入口）
+- 账号主理：`agents/01-account-strategist.md`
+- 内容制作官：`agents/02-content-producer.md`
+- 店铺运营官：`agents/03-store-operator.md`
+- 选品与供给官：`agents/04-assortment-supply-manager.md`
+- 投放与增长官：`agents/05-growth-amplification-manager.md`
+- 数据复盘与客服体验官：`agents/06-insights-cx-analyst.md`
+- skill 边界：`agents/skill-assignment.md`
 
-## Git Workflow
+## 维护原则
 
-### Branch Naming
-
-- New skills: `feature/skill-name`
-- Improvements: `fix/skill-name-description`
-- Documentation: `docs/description`
-
-### Commit Messages
-
-Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-- `feat: add skill-name skill`
-- `fix: improve clarity in page-cro`
-- `docs: update README`
-
-### Pull Request Checklist
-
-- [ ] `name` matches directory name exactly
-- [ ] `name` follows naming rules (lowercase, hyphens, no `--`)
-- [ ] `description` is 1-1024 chars with trigger phrases
-- [ ] `SKILL.md` is under 500 lines
-- [ ] No sensitive data or credentials
-
-## Tool Integrations
-
-This repository includes a tools registry for agent-compatible marketing tools.
-
-- **Tool discovery**: Read `tools/REGISTRY.md` to see available tools and their capabilities
-- **Integration details**: See `tools/integrations/{tool}.md` for API endpoints, auth, and common operations
-- **MCP-enabled tools**: ga4, stripe, mailchimp, google-ads, resend, zapier, zoominfo, clay, supermetrics, coupler, outreach, crossbeam, introw, composio
-- **Composio** (integration layer): Adds MCP access to OAuth-heavy tools without native MCP servers (HubSpot, Salesforce, Meta Ads, LinkedIn Ads, Google Sheets, Slack, etc.). See `tools/integrations/composio.md`
-
-### Registry Structure
-
-```
-tools/
-├── REGISTRY.md              # Index of all tools with capabilities
-└── integrations/            # Detailed integration guides
-    ├── ga4.md
-    ├── stripe.md
-    ├── rewardful.md
-    └── ...
-```
-
-### When to Use Tools
-
-Skills reference relevant tools for implementation. For example:
-- `referral-program` skill → rewardful, tolt, dub-co, mention-me guides
-- `analytics-tracking` skill → ga4, mixpanel, segment guides
-- `email-sequence` skill → customer-io, mailchimp, resend guides
-- `paid-ads` skill → google-ads, meta-ads, linkedin-ads guides
-
-For tools without native MCP servers (HubSpot, Salesforce, Meta Ads, LinkedIn Ads, Google Sheets, Slack, Notion), Composio provides MCP access via a single server. See `tools/integrations/composio.md` for setup and `tools/composio/marketing-tools.md` for the full toolkit mapping.
-
-## Checking for Updates
-
-When using any skill from this repository:
-
-1. **Once per session**, on first skill use, check for updates:
-   - Fetch `VERSIONS.md` from GitHub: https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/VERSIONS.md
-   - Compare versions against local skill files
-
-2. **Only prompt if meaningful**:
-   - 2 or more skills have updates, OR
-   - Any skill has a major version bump (e.g., 1.x to 2.x)
-
-3. **Non-blocking notification** at end of response:
-   ```
-   ---
-   Skills update available: X marketing skills have updates.
-   Say "update skills" to update automatically, or run `git pull` in your marketingskills folder.
-   ```
-
-4. **If user says "update skills"**:
-   - Run `git pull` in the marketingskills directory
-   - Confirm what was updated
-
-## Skill Categories
-
-See `README.md` for the current list of skills organized by category. When adding new skills, follow the naming patterns of existing skills in that category.
-
-## Claude Code-Specific Enhancements
-
-These patterns are **Claude Code only** and must not be added to `SKILL.md` files directly, as skills are designed to be cross-agent compatible (Codex, Cursor, Windsurf, etc.). Apply them locally in your own project's `.claude/skills/` overrides instead.
-
-### Dynamic content injection with `!`command``
-
-Claude Code supports embedding shell commands in SKILL.md using `` !`command` `` syntax. When the skill is invoked, Claude Code runs the command and injects the output inline — the model sees the result, not the instruction.
-
-**Most useful application: auto-inject the product marketing context file**
-
-Instead of every skill telling the agent "go check if `.agents/product-marketing-context.md` exists and read it," you can inject it automatically:
-
-```markdown
-Product context: !`cat .agents/product-marketing-context.md 2>/dev/null || echo "No product context file found — ask the user about their product before proceeding."`
-```
-
-Place this at the top of a skill's body (after frontmatter) to make context available immediately without any file-reading step.
-
-**Other useful injections:**
-
-```markdown
-# Inject today's date for recency-sensitive skills
-Today's date: !`date +%Y-%m-%d`
-
-# Inject current git branch (useful for workflow skills)
-Current branch: !`git branch --show-current 2>/dev/null`
-
-# Inject recent commits for context
-Recent commits: !`git log --oneline -5 2>/dev/null`
-```
-
-**Why this is Claude Code-only**: Other agents that load skills will see the literal `` !`command` `` string rather than executing it, which would appear as garbled instructions. Keep cross-agent skill files free of this syntax.
+- `CLAUDE.md` 只维护入口协议
+- 角色职责、输入输出、边界以 `agents/*.md` 为准
+- skill 使用规则与 owner 边界以 `agents/skill-assignment.md` 为准
+- 当入口协议与角色文档出现差异时，优先同步检查相关 `agents/` 文档
