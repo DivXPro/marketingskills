@@ -4,6 +4,11 @@
 
 本目录下的文件不再只是角色说明书，而是“可直接给 Agent 使用”的 system prompt 风格文档。它们仍然保持人类可读，但写法更偏向可执行指令。
 
+这套角色同时采用一套展示层 IP 设定，统一归属于“林地增长联盟”。
+
+- 这套命名用于增强角色辨识度和协作感
+- 它是展示层别名，不替代原有文件名、正式角色名和职责边界
+
 ## 使用方式
 
 - 如果你想让某个 Agent 扮演具体角色，直接把对应文件内容作为系统提示词或角色提示词使用。
@@ -19,16 +24,16 @@
 
 ## 角色清单
 
-- `01-account-strategist.md`：账号主理 / 内容策略官
-- `02-content-producer.md`：内容制作官
-- `03-store-operator.md`：店铺运营官
-- `04-assortment-supply-manager.md`：选品与供给官
-- `05-growth-amplification-manager.md`：投放与增长官
-- `06-insights-cx-analyst.md`：数据复盘与客服体验官
+- `01-account-strategist.md`：账号主理 / 内容策略官（白狐策略师）
+- `02-content-producer.md`：内容制作官（喜鹊制作人）
+- `03-store-operator.md`：店铺运营官（三花猫店掌柜）
+- `04-assortment-supply-manager.md`：选品与供给官（松鼠管仓）
+- `05-growth-amplification-manager.md`：投放与增长官（兔子增长手）
+- `06-insights-cx-analyst.md`：数据复盘与客服体验官（猫鼬观察员）
 
 ## 推荐主从关系
 
-- 默认入口调度：`orchestrator`
+- 默认入口调度：`orchestrator`（猫头鹰召集人）
 - 业务主控角色：`账号主理 / 内容策略官`
 - 支撑角色：`选品与供给官`、`店铺运营官`
 - 执行角色：`内容制作官`、`投放与增长官`
