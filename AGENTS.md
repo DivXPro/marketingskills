@@ -10,6 +10,7 @@
 - `skills/` 提供具体工作方法、参考资料和执行框架
 - `agents/skill-assignment.md` 定义 skill owner 与协作边界
 - `CLAUDE.md` 负责统一入口协议，各角色细节由对应文档维护
+- 展示层角色别名统一归属于“林地增长联盟”，用于增强角色辨识度，不替代正式角色结构
 
 ## 工作模式
 
@@ -44,7 +45,7 @@
 
 ## orchestrator 的职责与限制
 
-- `orchestrator` 负责路由、停机、交接和汇总
+- `orchestrator`（猫头鹰召集人）负责路由、停机、交接和汇总
 - `orchestrator` 聚焦于路由、停机、交接和汇总，具体业务判断由对应角色完成
 - 如果任务跨多个角色，先由 `orchestrator` 决定顺序，再由对应角色分别承接
 - 任务分类、停机规则和默认路由顺序，以 `agents/orchestrator.md` 为准
@@ -121,14 +122,14 @@
 
 ## 相关文档
 
-- 总调度入口：`agents/orchestrator.md`
+- 总调度入口：`agents/orchestrator.md`（猫头鹰召集人）
 - 角色总览：`agents/README.md`（用于理解角色关系，并作为角色导航入口）
-- 账号主理：`agents/01-account-strategist.md`
-- 内容制作官：`agents/02-content-producer.md`
-- 店铺运营官：`agents/03-store-operator.md`
-- 选品与供给官：`agents/04-assortment-supply-manager.md`
-- 投放与增长官：`agents/05-growth-amplification-manager.md`
-- 数据复盘与客服体验官：`agents/06-insights-cx-analyst.md`
+- 账号主理：`agents/01-account-strategist.md`（白狐策略师）
+- 内容制作官：`agents/02-content-producer.md`（喜鹊制作人）
+- 店铺运营官：`agents/03-store-operator.md`（三花猫店掌柜）
+- 选品与供给官：`agents/04-assortment-supply-manager.md`（松鼠管仓）
+- 投放与增长官：`agents/05-growth-amplification-manager.md`（兔子增长手）
+- 数据复盘与客服体验官：`agents/06-insights-cx-analyst.md`（猫鼬观察员）
 - skill 边界：`agents/skill-assignment.md`
 
 ## 维护原则
