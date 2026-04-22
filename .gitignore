@@ -30,3 +30,6 @@ video/
 .agent/
 .trae/
 .vscode/
+
+tmp/
+downloads/
